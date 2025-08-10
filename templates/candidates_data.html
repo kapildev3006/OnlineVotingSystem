@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Candidate Data - Online Voting System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #6a11cb, #2575fc, #43cea2, #185a9d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: #fff;
+        }
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+        .container {
+            margin-top: 60px;
+            animation: fadeInUp 1.1s 0.2s cubic-bezier(.25,.8,.25,1) forwards;
+            opacity: 0;
+            transform: translateY(40px) scale(0.98);
+        }
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .data-card {
+            background: rgba(255,255,255,0.97);
+            color: #222;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(76,175,80,0.10), 0 2px 8px rgba(0,0,0,0.08);
+            padding: 32px 24px 24px 24px;
+            margin-bottom: 24px;
+        }
+        .table {
+            background: transparent;
+            color: #333;
+            border-radius: 16px;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+            text-align: center;
+            font-size: 1.1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+        .table tbody tr {
+            transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+        .table tbody tr.visible {
+            opacity: 1;
+            transform: translateX(0);
+            animation: slideInRow 0.7s cubic-bezier(.68,-0.55,.27,1.55) forwards;
+        }
+        @keyframes slideInRow {
+            from { opacity: 0; transform: translateX(-40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .table tbody tr:hover {
+            background: #e0ffe6;
+            transform: scale(1.03);
+            box-shadow: 0 4px 24px rgba(44, 62, 80, 0.15);
+        }
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: #f8fff9;
+        }
+        .status-badge {
+            font-weight: 600;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 1rem;
+            transition: background 0.3s, color 0.3s;
+        }
+        .status-yes {
+            background: linear-gradient(90deg, #43cea2, #2575fc);
+            color: #fff;
+        }
+        .status-no {
+            background: #e74c3c;
+            color: #fff;
+        }
+        .back-animated-btn {
+            background: linear-gradient(90deg, #43cea2, #2575fc);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            box-shadow: 0 2px 8px rgba(67,206,162,0.10);
+            transition: background 0.4s, transform 0.2s, box-shadow 0.2s;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+        .back-animated-btn:hover, .back-animated-btn:focus {
+            background: linear-gradient(90deg, #2575fc, #43cea2);
+            transform: translateY(-2px) scale(1.07);
+            box-shadow: 0 6px 18px rgba(37,117,252,0.13);
+        }
+        h1 {
+            letter-spacing: 2px;
+            font-weight: 700;
+            text-shadow: 0 2px 8px rgba(44, 62, 80, 0.15);
+            animation: fadeInUp 1.5s 0.2s backwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="data-card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show mt-3 mx-auto" role="alert" style="max-width: 600px;">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            <h1 class="text-center mb-4">Registered Users & Voting Status</h1>
+            <table class="table table-striped animate-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Username</th>
+                        <th>Voted</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ user.username }}</td>
+                        <td>
+                            {% if user.has_voted %}
+                                <span class="status-badge status-yes">Yes</span>
+                            {% else %}
+                                <span class="status-badge status-no">No</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form action="/delete_user/{{ user.username }}" method="POST" style="display:inline;">
+                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this user?');">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-center mt-4">
+                <a href="/admin" class="btn back-animated-btn px-5 py-2">&larr; Back</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    // Animate table rows sliding in one by one
+    document.addEventListener('DOMContentLoaded', function() {
+        const rows = document.querySelectorAll('tbody tr');
+        rows.forEach((row, i) => {
+            setTimeout(() => {
+                row.classList.add('visible');
+            }, 200 + i * 120);
+        });
+    });
+    </script>
+</body>
+</html> 
