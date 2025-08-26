@@ -168,7 +168,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/">Home</a>
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="/admin_logout">Logout</a>
@@ -204,7 +204,7 @@
         <div class="card mb-4">
             <div class="card-body">
                 <h5 class="card-title">Add a New Candidate</h5>
-                <form action="/admin" method="POST">
+                <form action="{{ url_for('admin') }}" method="POST">
                     <div class="mb-3">
                         <label for="candidateName" class="form-label">Candidate Name</label>
                         <input type="text" class="form-control" id="candidateName" name="name" placeholder="Enter candidate name" required>
